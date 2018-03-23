@@ -1,0 +1,118 @@
+{
+	"info": {
+		"_postman_id": "ed0af29f-38ac-40be-8aa4-ee2cd3f02b82",
+		"name": "Spannering Postman Collection",
+		"description": "Series of tests for the Spannering App",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get All Doors",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2daeffb5-7fe2-48b3-b666-525e9ef185e9",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"response is ok\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"response contains the expected door id\", function () {",
+							"    pm.response.to.be.withBody;",
+							"    var txtResult = pm.response.text();",
+							"    pm.expect(txtResult).to.eql(\"this is a static list of doors\");",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "newDoorName"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/getAllDoors",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"getAllDoors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Door",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "28bd76d4-8755-4ea5-9701-023a798c32df",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"response is ok\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"response contains the expected door id\", function () {",
+							"    pm.response.to.be.withBody;",
+							"    var txtResult = pm.response.text();",
+							"    pm.expect(txtResult).to.eql(\"123\");",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "newDoorName"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/addDoor",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"addDoor"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "6e9e98c7-4202-4331-84fc-1bc7d3a816b6",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "b16a1b10-f67b-4c44-b55a-bdc73630b0bc",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
