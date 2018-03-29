@@ -3,56 +3,48 @@ package com.spannering.data;
 import com.google.cloud.spanner.*;
 import com.spannering.model.Door;
 
-import java.util.LinkedList;
-import java.util.List;
+import javax.validation.constraints.Null;
+import java.util.*;
 
 public class DoorDAO {
 
+    private static final Statement GET_ALL_DOORS_STATEMENT = Statement
+            .newBuilder("SELECT * from doors order by name  ")
+            .build();
 
-    public static final String INSTANCE_ID = "test-instance";
-    public static final String DATABASE_ID = "doorsdb";
-
-    private static DoorDAO singleton = null;
-    private DatabaseClient dbClient = null;
-
-    public static DoorDAO getInstance(){
-        if(singleton == null){
-            singleton = new DoorDAO();
-        }
-        final SpannerOptions options = SpannerOptions.newBuilder().build();
-        final Spanner spanner = options.getService();
-        try {
-            DatabaseId db = DatabaseId.of(options.getProjectId(),INSTANCE_ID, DATABASE_ID);
-            // This will return the default project id based on the environment.
-            String clientProject = spanner.getOptions().getProjectId();
-            if (!db.getInstanceId().getProject().equals(clientProject)) {
-                System.err.println("Invalid project specified. Project in the database id should match"
-                        + "the project name set in the environment variable GCLOUD_PROJECT. Expected: "
-                        + clientProject);
-            }
-            singleton.dbClient = spanner.getDatabaseClient(db);
-            return singleton;
- //           final DatabaseAdminClient dbAdminClient = spanner.getDatabaseAdminClient();
-
-        } finally {
-            spanner.close();
-        }
-
-    }
-
-
-
-    public List<Door> getAllDoors() {
-
+    public List<Door> getAllDoors(final DatabaseClient dbClient) {
         final List<Door> allDoors = new LinkedList<>();
-        final Statement statement = Statement
-                .newBuilder("SELECT * from doors")
-                .build();
-
-        final ResultSet resultSet = dbClient.singleUse().executeQuery(statement);
+        System.out.println("executeQuery " + GET_ALL_DOORS_STATEMENT);
+        final ReadContext readContext = dbClient.singleUse();
+        final ResultSet resultSet = readContext.executeQuery(GET_ALL_DOORS_STATEMENT);
         while (resultSet.next()) {
             allDoors.add(new Door(resultSet.getLong("door_id"), resultSet.getString("name")));
         }
+        System.out.println("returned " + allDoors.size());
         return allDoors;
     }
+
+    public Object deleteAllDoors(final DatabaseClient dbClient){
+
+        dbClient.write(Collections.singletonList(Mutation.delete("doors", KeySet.all())));
+        return "";  //TODO: return 204 (no content) and no body
+
+    }
+
+
+
+
+    public Door addDoor(final DatabaseClient dbClient, final Door newDoor) {
+
+        dbClient.write(Collections.singletonList(Mutation.newInsertBuilder("doors")
+                .set("door_id").to(newDoor.getId())
+                .set("name").to(newDoor.getName())
+                .build()
+        ));
+
+        return newDoor;
+
+    }
+
+
 }
